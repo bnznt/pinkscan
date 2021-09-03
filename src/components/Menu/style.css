@@ -1,0 +1,40 @@
+.menu a {
+  --tw-text-opacity: 1;
+  --icon-fill-light: rgba(156, 163, 175, var(--tw-text-opacity))
+}
+.menu a .link-inner > svg {
+  margin-right: 12px;
+}
+
+.menu .sub-menu-toggle {
+  margin-left: auto;
+}
+
+.menu a:hover,
+.menu a.router-link-exact-active {
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: currentColor;
+  --tw-text-opacity: 1;
+  --icon-fill-light: rgba(249, 168, 212, var(--tw-text-opacity))
+}
+
+.menu a:hover .link-inner > svg,
+.menu a.router-link-exact-active .link-inner > svg {
+  @apply text-primary-500;
+}
+
+.dark .menu a {
+  --tw-text-opacity: 1;
+  --icon-fill-light: rgba(55, 65, 81, var(--tw-text-opacity));
+  
+}
+
+.dark .menu a .link-inner > svg {
+  @apply text-gray-500;
+}
+
+.dark .menu a:hover .link-inner > svg,
+.dark .menu a.router-link-exact-active .link-inner > svg {
+  @apply text-primary-500;
+  --icon-fill-light: rgba(249, 168, 212, var(--tw-text-opacity))
+}
