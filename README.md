@@ -34,18 +34,6 @@ setInterval(async () => {
     pricePerToken: 3922.0787203932414
   }
 ]
-[
-  {
-    address: '0x74E4716E431f45807DCF19f284c7aA99F18a4fbc',
-    time: 2021-09-04T13:13:10.253Z,
-    tx: '0x84da3fa8643b939aa55f923176f2d4876300d1294388990018cd402c68ce91fa',
-    type: 'BUY',
-    numberTokenOne: 0.006452854182953973,
-    numberTokenTwo: 0.05,
-    price: 25.308602076764295,
-    pricePerToken: 3922.0787203932414
-  }
-]
 ```
 
 ## Todo
