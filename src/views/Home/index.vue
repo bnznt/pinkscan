@@ -1,6 +1,7 @@
 <template lang="pug">
 div.content-inner.relative.p-4(class="lg:p-6")
     Pair
+    TransactionTable
 </template>
 
 <script src="./script.ts"></script>

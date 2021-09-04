@@ -1,6 +1,6 @@
 <template lang="pug">
 .pair
-	.pair-header(class="grid py-7 px-2 gap-6 lg:grid-cols-3 pb-7 border-b border-gray-250 lg:pl-2 dark:border-gray-750")
+	.pair-header(class="grid py-7 px-2 gap-6 pb-7 border-b border-gray-250 lg:pt-0 lg:pl-2 lg:grid-cols-3 dark:border-gray-750")
 		.pair-info(class="flex flex-wrap mb-6 lg:col-span-2 lg:mb-0")
 			.pair-img(class="flex-shrink-0 mr-4")
 				img(:src="require('../../assets/ilayer.png')")

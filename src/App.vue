@@ -21,16 +21,6 @@ div(id="app" :class="getAppClass")
                 return this.global.state.sidebarOpen ? classes + ' sidebar-open' : classes
             }
         },
-        // setup() {
-        //     const siebarOpen = ref(false);
-        //     const toggleSidebarState = () => {
-        //         siebarOpen.value = !siebarOpen.value;
-        //     };
-        //     return {
-        //         siebarOpen,
-        //         toggleSidebarState
-        //     }
-        // }
     })
 </script>
 <style>
