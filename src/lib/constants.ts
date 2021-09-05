@@ -1,0 +1,7 @@
+const BSCSCAN_API_KEY = 'K16XGZRUKXVVF6D7VZ6MCEK32XU75ZPVBY'
+const WEB3_HTTP_PROVIDER = 'https://bsc-dataseed.binance.org/'
+
+export {
+    BSCSCAN_API_KEY,
+    WEB3_HTTP_PROVIDER
+}

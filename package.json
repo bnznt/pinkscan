@@ -1,0 +1,15 @@
+{
+  "name": "web3-frontend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "main": "$(npm bin)/ts-node --files main.ts"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.2",
+    "web3": "^1.5.2"
+  }
+}
