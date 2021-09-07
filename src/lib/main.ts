@@ -1,4 +1,4 @@
-import { TransactionService } from "./src/lib/transactions/TransactionService";
+import { TransactionService } from "./transactions/TransactionService";
 
 const main = async () => {
 
