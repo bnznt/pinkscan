@@ -25,23 +25,26 @@ t-card(
 						span(:class="['inline-flex px-2.5 py-1 items-center justify-center leading-none text-xs border rounded', props.row.trade.value ? 'text-green-450 bg-green-150 border-green-450 dark:text-green-100 dark:bg-green-900' : 'text-red-500 bg-red-200 border-red-400 dark:text-red-100 dark:bg-red-950' ]") {{ props.row.trade.label }}
 					td(:class="props.tdClass")
 						span.block(class="text-green-500") {{ props.row.price.value }}
-						span.label(class="text-green-500") {{ props.row.price.label }}
+						span.label(class="text-green-500") {{ props.row.price.label ? '' : '' }}
 					td(:class="props.tdClass")
 						span.block(class="text-green-500") {{ props.row.quantity.value }}
-						span.label(class="text-green-500") {{ props.row.quantity.label }}
+						span.label(class="text-green-500") {{ props.row.quantity.label ? '' : '' }}
 					td(:class="props.tdClass")
 						span.block(class="text-green-500") {{ props.row.value.value }}
 						span.label(class="text-green-500") {{ props.row.value.label }}
 					td(:class="props.tdClass")
-						span.block(class="text-blue-500") {{ props.row.walletMaker.value }}
+						span.block(class="text-blue-500" :title="props.row.walletMaker.value") {{ truncateAddress(props.row.walletMaker.value) }}
 						span.label(class="text-blue-500") {{ props.row.walletMaker.label }}
-					td(:class="[props.tdClass, 'text-blue-500']") {{ props.row.TxHash.value }}
+					td(:class="[props.tdClass, 'text-blue-500']")
+						a(class="hover:underline" :href="`https://bscscan.com/tx/${props.row.TxHash.value}`" target="_blank") {{ truncateTx(props.row.TxHash.value) }}
 	template(slot="footer")
 		.flex.flex-wrap
 			t-pagination(
+				v-if="totalItems > 0"
 				:total-items="totalItems"
 				:per-page="perPage"
 				v-model="currentPage"
+				@change="onChangePage"
 				prevLabel='<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20"><path fill="currentColor" fill-rule="evenodd" d="M12.7 5.3a1 1 0 010 1.4L9.42 10l3.3 3.3a1 1 0 01-1.42 1.4l-4-4a1 1 0 010-1.4l4-4a1 1 0 011.42 0z" clip-rule="evenodd"/></svg>'
 				nextLabel='<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.5 5l5 5-5 5"/></svg>'
 			)

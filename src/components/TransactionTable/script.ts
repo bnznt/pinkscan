@@ -1,4 +1,6 @@
-import { defineComponent, ref } from "@vue/composition-api";
+import { defineComponent, ref, onMounted } from "@vue/composition-api";
+import { getTransactions, getTransactionsCount } from "@/api/transaction.api";
+import { getDateTimeFormat, getTimeAgo } from "@/utils/dateTimeFormat";
 
 export default defineComponent({
   name: 'TransactionTable',
@@ -13,70 +15,87 @@ export default defineComponent({
       {title: 'Scan Rug'},
     ])
     const tableHeaders = ref(['Time (UTC)', 'Trade', 'Price', 'Quantity', 'Value', 'Wallet Maker', 'TxHash'])
-    const tableRows = ref([
-      {
-        time: {
-          value: 'Aug 13, 2021  21:44:26',
-          label: '6 mins & 26 secs ago'
-        },
-        trade: {
-          label: 'BUY',
-          value: true
-        },
-        price: {
-          value: '$0.000000001272',
-          label: 'Pancake v2',
-        },
-        quantity: {
-          value: '31,656,800,001',
-          label: 'iLayer'
-        },
-        value: {
-          value:'$735.83',
-          label: '1.8184 BNB'
-        },
-        walletMaker: {
-          value: '0xF9F6...2bb2',
-          label: 'BSCScan'
-        },
-        TxHash: {
-          value: '0xf8bca9d28c...'
-        }
-      },
-      {
-        time: {
-          value: 'Aug 13, 2021  21:44:26',
-          label: '6 mins & 26 secs ago'
-        },
-        trade: {
-          label: 'SELL',
-          value: false
-        },
-        price: {
-          value: '$0.000000001272',
-          label: 'Pancake v2',
-        },
-        quantity: {
-          value: '31,656,800,001',
-          label: 'iLayer'
-        },
-        value: {
-          value:'$735.83',
-          label: '1.8184 BNB'
-        },
-        walletMaker: {
-          value: '0xF9F6...2bb2',
-          label: 'BSCScan'
-        },
-        TxHash: {
-          value: '0xf8bca9d28c...'
-        }
-      },
-    ]);
-
-    const totalItems = ref(100);
+    const tableRows = ref([]);
+    const totalItems = ref(0);
     const perPage = ref(10);
     const currentPage = ref(1);
+    const pairAddress = ref('0x74E4716E431f45807DCF19f284c7aA99F18a4fbc');
+
+    onMounted(() => {
+      initTable()
+    })
+
+    const initTable = async () => {
+      setTableRows({
+        pairAddress: pairAddress.value,
+        pageSize: perPage.value,
+        page: currentPage.value
+      })
+      setTotalItems()
+    }
+    const setTableRows = async (params:Object) => {
+      const transactions = await getTransactions(params);
+      let rows:any = parseRows(transactions.data);
+      tableRows.value = rows;
+    }
+
+    const parseRows = (transactions:any) => {
+      let rows:any = [];
+      transactions.forEach(function(transaction:any){
+        let buy = transaction.type == 'buy',
+            quantity = transaction.price / transaction.price_per_token
+        
+        rows.push({
+          time: {
+            value: getDateTimeFormat(transaction.time),
+            label: getTimeAgo(transaction.time)
+          },
+          trade: {
+            label: transaction.type.toUpperCase(),
+            value: buy
+          },
+          price: {
+            value: `$${numberFormat(transaction.price_per_token)}`,
+            label: 'Pancake v2',
+          },
+          quantity: {
+            value: numberFormat(quantity),
+            label: 'iLayer'
+          },
+          value: {
+            value: `$${numberFormat(transaction.price)}`,
+            label: `${numberFormat(transaction.number_token_2)} BNB`
+          },
+          walletMaker: {
+            value: transaction.address,
+            label: 'BSCScan'
+          },
+          TxHash: {
+            value: transaction.tx
+          }
+        })
+      })
+
+      return rows
+    }
+    
+    const setTotalItems = async () => {
+      const count = await getTransactionsCount({
+        pairAddress: pairAddress.value
+      })
+      totalItems.value = count.data.count
+    }
+
+    const onChangePage = (page:Number) => {
+      setTableRows({
+        pairAddress: pairAddress.value,
+        pageSize: perPage.value,
+        page: page
+      })
+    }
+    const numberFormat = (number:any) => {
+      return new Intl.NumberFormat('en-US').format(number)
+    }
 
     return {
       navItems,
@@ -86,11 +105,18 @@ export default defineComponent({
       totalItems,
       perPage,
       currentPage,
+      onChangePage
     }
   },
   methods: {
     activateTabItem: function(index :any) {
       this.navItemActive = index
+    },
+    truncateAddress: function(address:string) {
+      return `${address.slice(0, 6)}...${address.slice(-4)}`
+    },
+    truncateTx: function(tx:string) {
+      return `${tx.slice(0, 12)}...`
     }
   },
 })
