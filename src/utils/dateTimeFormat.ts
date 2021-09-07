@@ -35,8 +35,6 @@ export const getTimeAgo = (from:any) => {
     diff -= time[key] * timeMap[key];
   });
   
-  console.log(time)
-  
   if( time.day > 1 ) {
     return `${time.day} day${getMulti(time.day)} ago`
   }
