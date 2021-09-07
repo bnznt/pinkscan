@@ -1,7 +1,15 @@
 import { request } from "@/utils/request"
 
-export const getHistory = () => {
+export const getTransactions = async (params:Object) => {
     return request({
-        url: '/transactions'
+        url: '/transactions',
+        params: params
+    });
+}
+
+export const getTransactionsCount = async (params:Object) => {
+    return request({
+        url: '/transactions/count',
+        params: params
     });
 }

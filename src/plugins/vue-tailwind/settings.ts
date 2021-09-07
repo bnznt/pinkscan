@@ -540,11 +540,11 @@ export const settings = {
         component: TPagination,
         props: {
             classes: {
-                wrapper: 'table border-collapse text-center ml-auto',
+                wrapper: 'inline-flex flex-wrap text-center ml-auto',
                 element: 'h-8 table-cell px-1',
                 activeElement: 'h-8 table-cell px-1',
                 disabledElement: 'h-8 table-cell px-1 text-gray-600 dark:text-gray-300',
-                ellipsisElement: 'h-8 px-1 hidden md:table-cell text-gray-600 dark:text-gray-300',
+                ellipsisElement: 'h-8 px-1 text-gray-600 dark:text-gray-300',
                 activeButton: 'bg-indigo-100 w-full h-full px-4 text-xs text-gray-600 border border-indigo-200 rounded-md transition duration-100 ease-in-out focus:outline-none dark:text-gray-300 dark:bg-gray-760 dark:border-gray-650',
                 disabledButton: 'opacity-25 w-full h-full px-4 text-xs cursor-not-allowed transition duration-100 ease-in-out',
                 button: 'w-full h-full px-4 text-xs text-gray-600 border border-transparent rounded-md transition duration-100 ease-in-out focus:outline-none hover:bg-indigo-100 hover:border-indigo-200 dark:text-gray-300 dark:hover:bg-gray-760 dark:hover:border-gray-650',
