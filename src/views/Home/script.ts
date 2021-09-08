@@ -1,5 +1,6 @@
 import { defineComponent, ref } from "@vue/composition-api";
 import Pair from '@/components/Pair/index.vue';
+import Chart from '@/components/Chart/index.vue';
 import TransactionTable from '@/components/TransactionTable/index.vue';
 
 export default defineComponent({
@@ -7,6 +8,7 @@ export default defineComponent({
 
     components: {
         Pair,
+        Chart,
         TransactionTable
     },
 });

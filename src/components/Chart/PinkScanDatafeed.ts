@@ -1,79 +1,87 @@
-import request from 'axios';
+import { getTransactions } from "@/api/transaction.api";
+import { batchTicksToCandle } from "candlestick-convert";
 
-declare const Datafeeds: any;
+const config = {
+    supports_search: false,
+    supports_group_request: true,
+    supports_marks: false,
+    supports_timescale_marks: false,
+    supported_resolutions: ['1', '3', '5', '15', '30', '60', '120', '240', '360', '720', '1D', '3D', '1W', '1M']
+};
 
-const bars = [
-    {
-        time: 1508313600000,
-        close: 42.1,
-        open: 41.0,
-        high: 43.0,
-        low: 40.4,
-        volume: 12000
-    }, {
-        time: 1508317200000,
-        close: 43.4,
-        open: 42.9,
-        high: 44.1,
-        low: 42.1,
-        volume: 18500
-    }, {
-        time: 1508320800000,
-        close: 44.3,
-        open: 43.7,
-        high: 44.8,
-        low: 42.8,
-        volume: 24000
-    }, {
-        time: 1508324400000,
-        close: 42.8,
-        open: 44.5,
-        high: 44.5,
-        low: 42.3,
-        volume: 45000
-    }
-];
+const resolutionMap = {
+    '1': 60,
+    '3': 180,
+    '5': 300,
+    '30': 30 * 60,
+    '60': 60 * 60,
+    '120': 60 * 60 * 2,
+    '240': 60 * 60 * 4,
+    '360': 60 * 60 * 6,
+    '1D': 86400,
+    '3D': 86400 * 3,
+    '1w': 86400 * 7,
+    '1M': 86400 * 30,
+};
 
-function getRandomInt(min: number, max: number) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
-}
+export default {
+    
+    onReady: (callback:any) => {
+        console.log('[onReady]: Method call');
+        setTimeout(() => callback(config))
+    },
+    searchSymbols: (userInput:any, exchange:any, symbolType:any, onResultReadyCallback:any) => {
+		console.log('====Search Symbols running')
+	},
+    resolveSymbol: (symbolName:any, onSymbolResolvedCallback:any, onResolveErrorCallback:any) => {
+		
+		let symbolConfig = {
+			name: symbolName,
+			description: '',
+			type: 'crypto',
+			session: '24x7',
+			timezone: 'Etc/UTC',
+			ticker: symbolName,
+			exchange: 'PinkScan',
+			minmov: 1,
+			pricescale: 100,
+			has_intraday: true,
+			intraday_multipliers: ['1', '60'],
+			supported_resolution:  config.supported_resolutions,
+			volume_precision: 8,
+			data_status: 'streaming',
+		}
+        
+		setTimeout(function() {
+			onSymbolResolvedCallback(symbolConfig)
+		}, 0)
 
-const generateBar = (timepoint: number) => {
-    const bar = bars[getRandomInt(0, 3)];
-    bar.time = timepoint;
+	},
+    getBars: async (symbolInfo: any, resolution: String, periodParams: any, onResult: any, onError: any) => {
+        
+        const {data: bars} = await getTransactions({
+            pairAddress: '0x74E4716E431f45807DCF19f284c7aA99F18a4fbc',
+            pageSize: 500
+        });
+        
+        const ticks = bars.map((transaction:any) => ({
+            time: new Date(transaction.time).getTime(),
+            quantity: Number(transaction.price),
+            price: Number(transaction.price_per_token),
+        }));
 
-    return bar;
-}
+        const historyBars = batchTicksToCandle(ticks, resolutionMap[resolution], true)
 
-export class PinkScanDatafeed extends Datafeeds.UDFCompatibleDatafeed {
-    constructor(...args: any[]) {
-        super(...args);
-    }
-
-    // public getBars(symbolInfo: any, resolution: any, periodParams: any, onResult: any, onError: any): void {
-    //     const bars: any[] = [];
-
-    //     let timePoint = +new Date(periodParams.from * 1e3).setSeconds(0, 0);
-    //     const now = +new Date(1630664256146);
-    //     while (timePoint < now) {
-    //         this.lastBarTimestamp = timePoint;
-    //         bars.push(generateBar(timePoint));
-
-    //         timePoint += resolution * 1e3;
-    //     }
-
-    //     onResult(bars);
-    // }
-
-    // async getBars(symbolInfo: any, resolution: any, periodParams: any, onResult: any, onError: any) {
-    //     const apiUrl = new URL('https://api2.poocoin.app/candles-bsc?to=2021-08-31T09%3A25%3A00.000Z&limit=321&lpAddress=0x74E4716E431f45807DCF19f284c7aA99F18a4fbc&baseLp=0x58F876857a02D6762E0101bb5C46A8c1ED44Dc16');
-
-    //     apiUrl.searchParams.set('interval', '1m');
-
-    //     const { data: bars } = await request(apiUrl.toString());
-
-    //     onResult(bars);
-    // }
+        if(historyBars.length < 1){
+            onResult([], { noData: true, nextTime: periodParams.to });
+        } else {
+            onResult(historyBars, { noData: false });
+        }
+    },
+    subscribeBars: (symbolInfo:any, resolution:any, onRealtimeCallback:any, subscribeUID:any, onResetCacheNeededCallback:any) => {
+        
+    },
+    unsubscribeBars: (subscriberUID:any) => {
+        
+    },
 }

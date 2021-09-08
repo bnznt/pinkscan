@@ -1,6 +1,5 @@
-import { defineComponent, onMounted, PropType } from "@vue/composition-api";
-
-declare const TradingView: any;
+import { defineComponent, onMounted } from "@vue/composition-api";
+import PinkScanDatafeed from "./PinkScanDatafeed";
 
 export default defineComponent({
     name: 'Chart',
@@ -8,22 +7,35 @@ export default defineComponent({
     props: {
         options: {
             type: Object as any,
-            required: true
         },
-        // bars: {
-        //     type: Array as PropType<Bar[]>,
-        //     required: true
-        // }
     },
 
     setup(props) {
         const initChart = () => {
-            if (!TradingView) return;
+            if (!window.TradingView) return;
 
-            new TradingView.widget({
+            const tvWidget = new window.TradingView.widget({
                 ...props.options,
-                container: 'chart'
+                debug: true,
+                symbol: 'ETH/BNB',
+                datafeed: PinkScanDatafeed,
+                interval: '1D',
+                container: 'chart',
+                library_path: '/charting_library/',
+                locale: 'en',
+                fullscreen: false,
+                autosize: true,
+                theme: getTheme()
             });
+
+            tvWidget.onChartReady(() => {
+                console.log('Chart has loaded!')
+            });
+        }
+
+        const getTheme = () => {
+            console.log('darkmode: ' + document.querySelector('html').classList.contains('dark'))
+            return document.querySelector('html').classList.contains('dark') ? 'Dark' : 'Light'
         }
 
         onMounted(() => {
