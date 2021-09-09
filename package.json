@@ -9,6 +9,7 @@
   "dependencies": {
     "@vue/composition-api": "^1.1.3",
     "axios": "^0.21.1",
+    "candlestick-convert": "^5.1.6",
     "core-js": "^3.6.5",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
