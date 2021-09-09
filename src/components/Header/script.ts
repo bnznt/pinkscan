@@ -26,25 +26,24 @@ export default defineComponent({
         address: pair.address,
         symbol: pair.symbol,
       }))
-
-      // const results = pairs.filter((pair) => {
-      //   return pair.name.toLowerCase().includes(q.toLowerCase()) || pair.addess.toLowerCase().includes(q.toLowerCase())
-      // })
       
       pairsOptions.value = pairs
     }
 
     const onChangeSymbol = function(q) {
-      console.log('hello', )
       global.setSymbol(q)
       fetchPair(q)
+    }
+    const onChangePair = function(q) {
+      global.setAddress(q)
     }
 
     return {
       fetchSymbol,
       fetchPair,
       onChangeSymbol,
-      pairsOptions
+      pairsOptions,
+      onChangePair
     }
   },
   methods: {
