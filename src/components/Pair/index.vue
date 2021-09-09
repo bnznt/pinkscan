@@ -5,10 +5,10 @@
 			.pair-img(class="flex-shrink-0 mr-4")
 				img(:src="require('../../assets/ilayer.png')")
 			.pair-content(class="space-y-1 pb-3 lg:pr-6 lg:pb-0")
-				.pair-name(class="pl-20 font-semibold text-gray-900 transform -translate-y-10 sm:pl-0 sm:transform-none dark:text-white") iLayer (iLayer/BNB)
+				.pair-name(class="pl-20 font-semibold text-gray-900 transform -translate-y-10 sm:pl-0 sm:transform-none dark:text-white") {{global.state.pair.name_token_1}} ({{global.state.pair.name_token_1}}/{{global.state.pair.name_token_2}})
 				.pair-contract
 					span(class="label text-gray-600 dark:text-gray-400") Contract: 
-					a(class="text-blue-500 break-all" href="#" target="_blank") 0x603c7f932ed1fc6575303d8fb018fdcbb0f39a95
+					a(class="text-blue-500 break-all" href="#" target="_blank") {{global.state.pair.symbol}}
 					button(class="copy ml-2 text-gray-400 dark:text-gray-300" @click.prevent)
 						copy
 				.pair-price(class="text-green-500 break-all") $0.00000000123582 (24H Change: +24.54%)
@@ -35,7 +35,7 @@
 	.pair-summary(class="grid py-7 px-2 gap-6 lg:grid-cols-3")
 		.pair-summary-col
 			.summary-title(class="text-sm mb-1 text-gray-600 dark:text-gray-300") Total Supply:
-			.summary-content(class="text-gray-900 dark:text-gray-100") 1,000,000,000,000,000
+			.summary-content(class="text-gray-900 dark:text-gray-100") {{numberFormat(totalSupply)}}
 		.pair-summary-col
 			.summary-title(class="text-sm mb-1 text-gray-600 dark:text-gray-300") Market Cap: (In cludes locked, excludes burned)
 			.summary-content(class="text-green-500") $1,211,368
