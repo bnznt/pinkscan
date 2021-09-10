@@ -62,13 +62,11 @@ export default {
 
         console.log(periodParams)
 
-        if(!periodParams.firstDataRequest) {
-            onResult([], { noData: true });
-        }
-
         const {data: bars} = await getTransactions({
             pairAddress: '0x74E4716E431f45807DCF19f284c7aA99F18a4fbc',
-            pageSize: 10000,
+            pageSize: 50000,
+            from: periodParams.from * 1e3,
+            to: periodParams.to  * 1e3
         });
         
         const ticks = bars.map((transaction:any) => ({
