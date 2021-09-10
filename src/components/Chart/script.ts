@@ -19,7 +19,7 @@ export default defineComponent({
                 debug: true,
                 symbol: 'ETH/BNB',
                 datafeed: PinkScanDatafeed,
-                interval: '1D',
+                interval: '1',
                 container: 'chart',
                 library_path: '/charting_library/',
                 locale: 'en',

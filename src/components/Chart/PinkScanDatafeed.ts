@@ -1,5 +1,6 @@
 import { getTransactions } from "@/api/transaction.api";
 import { batchTicksToCandle } from "candlestick-convert";
+import { TransactionService } from "@/lib/transactions/TransactionService";
 
 const config = {
     supports_search: false,
@@ -58,10 +59,16 @@ export default {
 
 	},
     getBars: async (symbolInfo: any, resolution: String, periodParams: any, onResult: any, onError: any) => {
-        
+
+        console.log(periodParams)
+
+        if(!periodParams.firstDataRequest) {
+            onResult([], { noData: true });
+        }
+
         const {data: bars} = await getTransactions({
             pairAddress: '0x74E4716E431f45807DCF19f284c7aA99F18a4fbc',
-            pageSize: 500
+            pageSize: 10000,
         });
         
         const ticks = bars.map((transaction:any) => ({
@@ -71,15 +78,54 @@ export default {
         }));
 
         const historyBars = batchTicksToCandle(ticks, resolutionMap[resolution], true)
-
+        console.log(historyBars)
         if(historyBars.length < 1){
-            onResult([], { noData: true, nextTime: periodParams.to });
+            onResult([], { noData: true });
         } else {
             onResult(historyBars, { noData: false });
         }
     },
     subscribeBars: (symbolInfo:any, resolution:any, onRealtimeCallback:any, subscribeUID:any, onResetCacheNeededCallback:any) => {
+        console.log('subscribeBars running', subscribeUID)
+
+        const main = async () => {
+
+            const transactionService = new TransactionService();
+            await transactionService.init({
+                nameTokenOne: 'ETH',
+                nameTokenTwo: 'BNB',
+                nameFactory: 'BUSD'
+            })
         
+            setInterval(async () => {
+                const transactions = await transactionService.getTransactions();
+                
+                console.log('transaction:', transactions)
+
+                let ticks = transactions.map((transaction:any) => ({
+                    time: new Date(transaction.time).getTime(),
+                    quantity: Number(transaction.price),
+                    price: Number(transaction.pricePerToken),
+                }));
+                
+                if(ticks.length < 1 ) {
+                    return;
+                }
+                
+                const historyBars = batchTicksToCandle(ticks, resolutionMap[resolution], true)
+                
+                if(historyBars.length < 1) {
+                    return;
+                }
+
+                historyBars.forEach((bar) => {
+                    onRealtimeCallback(bar)
+                })
+
+            }, 1500);
+        }
+        
+        main().catch(err => console.error(err));
     },
     unsubscribeBars: (subscriberUID:any) => {
         
