@@ -1,3 +1,15 @@
+export const numberFormat = (number:any) => {
+  return new Intl.NumberFormat('en-US').format(number)
+}
+
+export const truncateAddress = (address:string) => {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`
+}
+
+export const truncateTx = (tx:string) => {
+  return `${tx.slice(0, 12)}...`
+}
+
 const months = [
   'Jan',
   'Feb',
@@ -15,8 +27,10 @@ const months = [
 
 export const getDateTimeFormat = (time:any) => {
   time = new Date(time);
+  let hour = time.getHours() > 9 ? time.getHours() : `0${time.getHours()}`
+  let minute = time.getMinutes() > 9 ? time.getMinutes() : `0${time.getMinutes()}`
   let second = time.getSeconds() > 9 ? time.getSeconds() : `0${time.getSeconds()}`
-  return `${months[time.getMonth()]} ${time.getDate()}, ${time.getFullYear()} ${time.getHours()}:${time.getMinutes()}:${second}`
+  return `${months[time.getMonth()]} ${time.getDate()}, ${time.getFullYear()} ${hour}:${minute}:${second}`
 }
 
 export const getTimeAgo = (from:any) => {
