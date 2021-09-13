@@ -1,4 +1,4 @@
-import { reactive, readonly } from "@vue/composition-api";
+import { reactive } from "@vue/composition-api";
 
 const state = reactive({
   sidebarOpen: false,
@@ -8,7 +8,9 @@ const state = reactive({
     address: "0x74E4716E431f45807DCF19f284c7aA99F18a4fbc",
     name_token_1: "ETH",
     name_token_2: "BNB",
-  }
+    main_net_running: false,
+    transactions: [],
+  },
 });
 
 const toggleSidebar = function () {
@@ -25,11 +27,29 @@ const openSearch = () => {
 const closeSearch = () => {
   state.searchOpen = false;
 }
-const setSymbol = (symbol) => {
+const setSymbol = (symbol:string) => {
   state.pair.symbol = symbol;
 }
-const setAddress = (address) => {
+const setAddress = (address:string) => {
   state.pair.address = address;
+}
+const runMainNet = () => {
+  state.pair.main_net_running = true;
+}
+const stopMainNet = () => {
+  state.pair.main_net_running = false;
+}
+const pushTransaction = (transaction:any) => {
+  state.pair.transactions.unshift(transaction)
+  limitTransactionSize()
+}
+const setTransactions = (transactions:any) => {
+  let oldTransactions = state.pair.transactions
+  state.pair.transactions = [].concat(transactions, oldTransactions);
+  limitTransactionSize()
+}
+const limitTransactionSize = () => {
+  state.pair.transactions = state.pair.transactions.filter((transaction, index) => {return index < 101})
 }
 
 export default {
@@ -39,5 +59,9 @@ export default {
   openSearch,
   closeSearch,
   setSymbol,
-  setAddress
+  setAddress,
+  runMainNet,
+  stopMainNet,
+  pushTransaction,
+  setTransactions
 };
