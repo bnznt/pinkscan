@@ -51,20 +51,6 @@ class TransactionService {
         this.factoryContract = new this.web3.eth.Contract(this.factoryABI, this.factoryAddress);
     }
 
-    public async mergeTransactions(transactions: TransactionRepository[]): Promise<TransactionRepository[]> {
-        const merged = Array.from(transactions.reduce((transaction, { numberTokenOne, numberTokenTwo, price, pricePerToken, ...r }) => {
-            const key = JSON.stringify(r);
-            const current = transaction.get(key) || { ...r, numberTokenOne: 0, numberTokenTwo: 0, price: 0, pricePerToken: 0 };
-            return transaction.set(key, { ...current,
-                numberTokenOne: current.numberTokenOne + numberTokenOne,
-                numberTokenTwo: current.numberTokenTwo + numberTokenTwo,
-                price: current.price + price,
-                pricePerToken: (current.price + price) / (current.numberTokenOne + numberTokenOne)
-            });
-        }, new Map).values());
-        return merged;
-    }
-
     /**
      * Returns an transactions
      */
@@ -86,14 +72,13 @@ class TransactionService {
                 address: this.pairAddress,
                 time: new Date(),
                 tx,
-                type,
-                numberTokenOne,
-                numberTokenTwo,
+                type: type.toLowerCase(),
+                number_token_1: numberTokenOne,
+                number_token_2: numberTokenTwo,
                 price,
-                pricePerToken
+                price_per_token: pricePerToken
             })
         }
-        transactions = await this.mergeTransactions(transactions);
         return transactions;
     }
 }
