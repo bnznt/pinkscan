@@ -15,9 +15,3 @@ export const getPairs = async (symbolAddress:String) => {
         url: `/symbols/${symbolAddress}/pairs`
     });
 }
-
-export const getTotalSupply = async (symbol:String) => {
-    return bscRequest({
-        url: `?module=stats&action=tokensupply&contractaddress=${symbol}&apikey=${BSCSCAN_API_KEY}`,
-    })
-}

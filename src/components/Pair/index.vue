@@ -35,7 +35,7 @@
 	.pair-summary(class="grid py-7 px-2 gap-6 lg:grid-cols-3")
 		.pair-summary-col
 			.summary-title(class="text-sm mb-1 text-gray-600 dark:text-gray-300") Total Supply:
-			.summary-content(class="text-gray-900 dark:text-gray-100") {{numberFormat(totalSupply)}}
+			.summary-content(class="text-gray-900 dark:text-gray-100") 1,304,999,999,998,559,600,000,000
 		.pair-summary-col
 			.summary-title(class="text-sm mb-1 text-gray-600 dark:text-gray-300") Market Cap: (In cludes locked, excludes burned)
 			.summary-content(class="text-green-500") $1,211,368
