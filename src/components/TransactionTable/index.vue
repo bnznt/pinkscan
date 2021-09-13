@@ -13,7 +13,7 @@ t-card(
 	template
 		t-table(
 			:headers="tableHeaders"
-			:data="tableRows"
+			:data="getTableRows"
 			:classes="{ table: 'transaction-table min-w-full divide-y divide-gray-100 rounded-sm shadow-sm dark:divide-gray-350', theadTh: 'px-3 py-2 text-sm font-medium text-left text-gray-500 bg-gray-260 border-t border-b dark:border-gray-350 dark:bg-gray-780', tbody: 'divide-y divide-gray-100 dark:divide-gray-350', td: 'px-3 py-2 text-sm whitespace-nowrap'}"
 		)
 			template(slot="row" slot-scope="props")

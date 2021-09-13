@@ -1,13 +1,12 @@
-import { defineComponent, ref, onMounted } from "@vue/composition-api";
+import { defineComponent, ref, onMounted, inject, computed } from "@vue/composition-api";
 import { getTransactions, getTransactionsCount } from "@/api/transaction.api";
-import { getDateTimeFormat, getTimeAgo } from "@/utils/dateTimeFormat";
-import { TransactionService } from "@/lib/transactions/TransactionService";
-import { dropRight, findIndex } from "lodash"
+import { getDateTimeFormat, getTimeAgo, numberFormat, truncateAddress, truncateTx } from "@/utils/format";
 
 export default defineComponent({
 	name: 'TransactionTable',
 	inject: ['global'],
 	setup () {
+		const global:any = inject('global')
 		const navItemActive = ref(0)
 		const navItems = ref([
 			{title: 'DEX Trades'},
@@ -21,33 +20,32 @@ export default defineComponent({
 		const totalItems = ref(0);
 		const perPage = ref(10);
 		const currentPage = ref(1);
-		const pairAddress = ref('0x74E4716E431f45807DCF19f284c7aA99F18a4fbc');
-		const transactionService = new TransactionService();
-		let callMainNet:any;
+
 		onMounted(() => {
 			initTable()
 		})
 
-		const initTable = () => {
-			setTableRows({
-				pairAddress: pairAddress.value,
+		const initTable = async () => {
+			setTotalItems()
+			await setTableRows({
+				pairAddress: global.state.pair.address,
 				pageSize: perPage.value,
 				page: currentPage.value
 			})
-			setTotalItems()
-			fetchTransactionFromMainNet()
+			global.setTransactions(tableRows.value)
 		}
 		const setTableRows = async (params:Object) => {
-			const transactions = await getTransactions(params);
-			let rows:any = parseRows(transactions.data);
-			tableRows.value = rows;
+			const {data: transactions} = await getTransactions(params);
+
+			tableRows.value = transactions.filter((row:any, index:number) => {return index < perPage.value + 1});
 		}
 
 		const parseRows = (transactions:any) => {
 			let rows:any = [];
 			transactions.forEach(function(transaction:any){
-				let buy = transaction.type == 'buy',
-						quantity = transaction.price / transaction.price_per_token
+				let buy = transaction.type.toLowerCase() == 'buy',
+						transactionPrice = transaction.price_per_token,
+						quantity = transaction.price / transactionPrice
 				
 				rows.push({
 					time: {
@@ -59,7 +57,7 @@ export default defineComponent({
 						value: buy
 					},
 					price: {
-						value: `$${numberFormat(transaction.price_per_token)}`,
+						value: `$${numberFormat(transactionPrice)}`,
 						label: 'Pancake v2',
 					},
 					quantity: {
@@ -82,93 +80,56 @@ export default defineComponent({
 
 			return rows
 		}
+
+		const getTableRows = computed(() => {
+			let rows:any = global.state.pair.transactions
+			
+			if (currentPage.value !== 1) {
+				rows = tableRows.value;
+			}
+			
+			rows = rows.filter((row:any) => { return Object.keys(row).length})
+			rows = rows.sort((a, b) => {return b.time - a.time})
+			rows = rows.filter((row:any, index:number) => {return index < perPage.value })
+			rows = parseRows(rows);
+
+			return rows
+		})
 		
 		const setTotalItems = async () => {
 			const count = await getTransactionsCount({
-				pairAddress: pairAddress.value
+				pairAddress: global.state.pair.address
 			})
 			totalItems.value = count.data.count
 		}
-
-		const fetchTransactionFromMainNet = async () => {
-
-			await transactionService.init({
-				nameTokenOne: 'ETH',
-				nameTokenTwo: 'BNB',
-				nameFactory: 'BUSD'
-			});
-
-			callMainNet = setInterval(async () => {
-				const transactions = await transactionService.getTransactions();
-				
-				
-				if(transactions.length < 1) {
-					return;
-				}
-	
-				let transactionsMap = transactions.map((transaction:any) => ({
-					symbol: transaction.symbol,
-					address: transaction.address,
-					time: new Date(transaction.time).getTime(),
-					tx: transaction.tx,
-					type: transaction.type.toLowerCase(),
-					number_token_1: Number(transaction.numberTokenOne),
-					number_token_2: Number(transaction.numberTokenTwo),
-					price: Number(transaction.price),
-					price_per_token: Number(transaction.pricePerToken),
-				}));
-
-				
-				let rows:any = parseRows(transactionsMap);
-
-				rows = rows.filter((row) => {
-					return findIndex(tableRows.value, function(r) { return r.TxHash.value == row.TxHash.value; } ) == -1
-				})
-				let newTableRows = tableRows.value
-				
-				if(currentPage.value > 1) {
-					console.log(currentPage.value)
-					clearInterval(callMainNet)
-					return
-				}
-				tableRows.value = [ ...rows, ...dropRight(newTableRows, rows.length)]
-			}, 1500);
-		}
-
 		const onChangePage = (page:Number) => {
 			if(page == 1) {
 				return
 			}
 			setTableRows({
-				pairAddress: pairAddress.value,
+				pairAddress: global.state.pair.address,
 				pageSize: perPage.value,
 				page: page
 			})
-		}
-		const numberFormat = (number:any) => {
-			return new Intl.NumberFormat('en-US').format(number)
 		}
 
 		return {
 			navItems,
 			navItemActive,
 			tableHeaders,
+			getTableRows,
 			tableRows,
 			totalItems,
 			perPage,
 			currentPage,
-			onChangePage
+			onChangePage,
+			truncateAddress,
+			truncateTx
 		}
 	},
 	methods: {
 		activateTabItem: function(index :any) {
 			this.navItemActive = index
 		},
-		truncateAddress: function(address:string) {
-			return `${address.slice(0, 6)}...${address.slice(-4)}`
-		},
-		truncateTx: function(tx:string) {
-			return `${tx.slice(0, 12)}...`
-		}
 	},
 })
